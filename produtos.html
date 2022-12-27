@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doce Sabor</title>
+    <link rel="stylesheet" href="./style/produtos.css">
+    <!-- CDN do Bootstrap! -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!--Font Font Awesome CDN LINK para ícones-->
+    <link rel = "stylesheet" href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <!-- MENU DO SITE -->
+    <nav class="navbar">
+        <!-- LOGO -->
+        <div class="logo">
+            <a href="./index.html"><img src="./src/logomarca-branco.png" width="80px" alt="Logo da empresa de confeitaria Doce Sabor"></a>
+        </div>
+        <!-- NAVEGAÇÃO MENU -->
+        <ul class="nav-links">
+        <!-- CHECKBOX HACK -->
+            <input type="checkbox" id="checkbox_toggle" />
+            <label for="checkbox_toggle" class="hamburger">&#9776;</label>
+            <!-- NAVEGAÇÃO MENUS -->
+            <div class="menu">
+                <li><a href="/">Produtos</a></li>
+                <li><a href="/">Compras</a></li>
+            </div>
+        </ul>
+        </nav>
+    
+    <!-- TOPO DA PÁGINA -->
+    <header>
+        <h1>Cadastro de Produtos </h1>
+    </header>
+    <!-- CORPO DA PÁGINA -->
+    <main>
+        <div class="topo row">
+            <div class="col-md-2">
+                <h3>Produtos</h3>
+            </div>
+            <div class="col-md-8">
+                <form class="form-inline">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Procurar" aria-label="Procurar" style="width:80%" >
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Procurar</button>
+                  </form> 
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="button mobile" id="cadastrarProduto" data-toggle="modal" data-target="#modalCadastro">Adicionar produto <span style="font-size:18px; font-weight: 800;">+</span></button>
+            </div>
+            
+            
+        </div>
+        
+        <div class="tabela">
+            <table class="records" >
+                <thead>
+                    <tr>
+                        <th>Cód</th>
+                        <th>Descrição</th>
+                        <th>Categoria</th>
+                        <th>Estoque</th>
+                        <th>Valor</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+            </table>
+        </div>
+        <div class="modal" id="modalCadastro" tabindex="-1" role="dialog" aria-labelledby="modalCadastro" aria-hidden="true">
+            <div class="modal-dialog  modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="tituloModal">Novo Produto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="">
+                        
+                        <div class="form-group">
+                            <label for="desc-form">Descrição do produto</label>
+                            <input type="tex" class="form-control modal-field" id="descricao" placeholder="Insira uma descrição sobre o produto">
+                        </div>
+                        <div class="form-group">
+                            <label for="categoria-form">Selecione uma categoria</label>
+                            <select class="form-control" id="categoria">
+                                <option>Ingredientes</option>
+                                <option>Utensílios de Cozinha</option>
+                                <option>Embalagens</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="estoque-form">Estoque</label>
+                            <input type="number" class="form-control modal-field" id="estoque" placeholder="Coloque a quantidade de estoque do produto">
+                        </div>
+                        <div class="form-group">
+                            <label for="valor-form">Valor</label>
+                            <input type="number" class="form-control modal-field" id="valor" placeholder="Insira o valor do produto">
+                        </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="produto.cancelar()">Cancelar</button>
+                    <button type="button" class="btn btn-primary"  onclick="produto.salvar()">Salvar</button>
+                  </div>
+                </div>
+            </div>
+        </div>       
+    </main>
+
+    <script>
+        class Produto{
+            constructor(){
+                this.id = 1;
+                this.descProduto = '';
+                this.categoria = '';
+                this.estoque = 1;
+                this.valor = 1;
+                this.arrayProdutos = [];
+            }
+            salvar(){
+                let produto = this.lerDados();
+
+                if (this.validaCampos(produto));{
+                    this.adicionar(produto);
+                }
+                this.listaTabela();
+            }
+            
+            listaTabela(){
+                let tbody = document.getElementById('tbody');
+                tbody.innerText ='';
+
+                for(let i=0; i< this.arrayProdutos.length; i++){
+                    let tr = tbody.insertRow();
+
+                    let td_id = tr.insertCell();
+                    let td_descricao = tr.insertCell();
+                    let td_categoria = tr.insertCell();
+                    let td_estoque = tr.insertCell();
+                    let td_valor = tr.insertCell();
+                    let td_acoes = tr.insertCell();
+
+                    td_id.innerText = this.arrayProdutos[i].id;
+                    td_descricao.innerText = this.arrayProdutos[i].descricao;
+                    td_categoria.innerText = this.arrayProdutos[i].categoria;
+                    td_estoque.innerText = this.arrayProdutos[i].estoque;
+                    td_valor.innerText = this.arrayProdutos[i].valor;
+                    
+
+                    let btnEdit = document.createElement("button");
+                    btnEdit.innerHTML = 'Editar';
+
+                    let btnDel = document.createElement("button");
+                    btnDel.innerHTML  = 'Deletar';
+                    btnDel.setAttribute("onclick","produto.deletar("+ this.arrayProdutos[i].id +")");
+
+                    td_acoes.appendChild(btnEdit);
+                    td_acoes.appendChild(btnDel);
+                }
+            }
+
+            adicionar(produto){
+                this.arrayProdutos.push(produto);
+                this.id++
+            }
+
+            lerDados(){
+                let produto ={}
+                produto.id =this.id;
+                produto.descricao = document.getElementById('descricao').value;
+                produto.categoria = document.getElementById('categoria').value;
+                produto.estoque = document.getElementById('estoque').value;
+                produto.valor = document.getElementById('valor').value;
+                
+                return produto;
+            }
+
+            validaCampos(produto){
+                let msg ='';
+
+                if(produto.descrcricao == ""){
+                    msg += 'Informe a descrição do Produto \n'
+                }
+                if(produto.estoque == ""){
+                    msg += 'Insira a quantidade de estoque \n'
+                }
+                if(produto.valor == ""){
+                    msg += 'Insira o valor do produto \n'
+                }
+
+                if (msg != ''){
+                    alert(msg);
+                    return false
+                }
+            }
+
+            deletar(){
+                alert('Estou deletandoooo!');
+                // document.getElementById('descricao');
+                // document.getElementById('categoria');
+                // document.getElementById('estoque');
+                // document.getElementById('valor');
+            }
+        }
+
+var produto = new Produto();
+    </script>
+
+    <script src="./js/produtos.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    
+</body>
+</html>
