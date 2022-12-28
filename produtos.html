@@ -43,13 +43,13 @@
                 <h3>Produtos</h3>
             </div>
             <div class="col-md-8">
-                <form class="form-inline">
+                <!-- <form class="form-inline">
                     <input class="form-control mr-sm-2" type="search" placeholder="Procurar" aria-label="Procurar" style="width:80%" >
                     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Procurar</button>
-                  </form> 
+                  </form>  -->
             </div>
             <div class="col-md-2">
-                <button type="button" class="button mobile" id="cadastrarProduto" data-toggle="modal" data-target="#modalCadastro">Adicionar produto <span style="font-size:18px; font-weight: 800;">+</span></button>
+                <button type="button" class="button mobile cadastrar" id="cadastrarProduto" data-toggle="modal" data-target="#modalCadastro">Adicionar produto <span style="font-size:18px; font-weight: 800;">+</span></button>
             </div>
             
             
@@ -71,24 +71,24 @@
                 </tbody>
             </table>
         </div>
+
         <div class="modal" id="modalCadastro" tabindex="-1" role="dialog" aria-labelledby="modalCadastro" aria-hidden="true">
             <div class="modal-dialog  modal-lg" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="tituloModal">Novo Produto</h5>
+                    <h5 class="modal-title" id="tituloModal">Produto</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                   <div class="modal-body">
-                    <form action="">
-                        
+                    <form action="" id="form">
                         <div class="form-group">
                             <label for="descricao">Descrição do produto</label>
-                            <input type="tex" class="form-control modal-field" id="descricao" placeholder="Insira uma descrição sobre o produto">
+                            <input type="tex" class="form-control modal-field" id="descricao" placeholder="Insira uma descrição sobre o produto" required>
                         </div>
                         <div class="form-group">
-                            <label for="categoria">Selecione uma categoria</label>
+                            <label for="categoria" required>Selecione uma categoria</label>
                             <select class="form-control" id="categoria">
                                 <option>Ingredientes</option>
                                 <option>Utensílios de Cozinha</option>
@@ -97,21 +97,21 @@
                         </div>
                         <div class="form-group">
                             <label for="estoque">Estoque</label>
-                            <input type="number" class="form-control modal-field" id="estoque" placeholder="Coloque a quantidade de estoque do produto">
+                            <input type="number" class="form-control modal-field" id="estoque" placeholder="Coloque a quantidade de estoque do produto" required>
                         </div>
                         <div class="form-group">
                             <label for="valor">Valor</label>
-                            <input type="number" class="form-control modal-field" id="valor" placeholder="Insira o valor do produto">
+                            <input type="number" class="form-control modal-field" id="valor" placeholder="Insira o valor do produto" required>
                         </div>
                     </form>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="produto.cancelar()">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="btn1" onclick="produto.salvar()">Salvar</button>
                   </div>
                 </div>
             </div>
-        </div>       
+        </div>
     </main>
 
     <script>
@@ -133,9 +133,11 @@
                     this.atualizar(this.editId, produto);
                     }
                 }
+
                 this.listaTabela();
                 this.buttonSalvar();
-
+                this.clearFields();
+                
                 console.log(produto);
             }
                 
@@ -162,9 +164,15 @@
                     let btnEdit = document.createElement("button");
                     btnEdit.innerHTML = 'Editar';
                     btnEdit.setAttribute("onclick","produto.preparaEdicao("+ JSON.stringify(this.arrayProdutos[i]) +")");
+                    btnEdit.setAttribute('id', 'btnEditar');
+                    btnEdit.setAttribute('class', 'btnyellow');
+                    btnEdit.setAttribute('data-toggle','modal');
+                    btnEdit.setAttribute('data-target','#modalCadastro');
 
                     let btnDel = document.createElement("button");
                     btnDel.innerHTML  = 'Deletar';
+                    btnDel.setAttribute('id', 'btnDeletar');
+                    btnDel.setAttribute('class', 'btnred');
                     btnDel.setAttribute("onclick","produto.deletar("+ this.arrayProdutos[i].id +")");
 
                     td_acoes.appendChild(btnEdit);
@@ -189,15 +197,21 @@
                 }
             }
 
-            preparaEdicao(dados){
-                 this.editId = dados.id;
-                
-                 document.getElementById('descricao').value = dados.descricao;
-                 document.getElementById('categoria').value = dados.categoria;
-                 document.getElementById('estoque').value = dados.estoque;
-                 document.getElementById('valor').value = dados.valor;
+            clearFields(){
+                $('#form').each (function(){
+                this.reset();
+                });
+            }
 
-                 document.getElementById('btn1').innerText="Atualizar";
+            preparaEdicao(dados){
+                this.editId = dados.id;
+                
+                document.getElementById('descricao').value = dados.descricao;
+                document.getElementById('categoria').value = dados.categoria;
+                document.getElementById('estoque').value = dados.estoque;
+                document.getElementById('valor').value = dados.valor;
+
+                document.getElementById('btn1').innerText="Atualizar";
             }
 
             lerDados(){
@@ -214,7 +228,7 @@
             validaCampos(produto){
                 let msg ='';
 
-                if(produto.descrcricao == ""){
+                if(produto.descricao == ""){
                     msg += 'Informe a descrição do Produto \n'
                 }
                 if(produto.estoque == ""){
@@ -226,6 +240,9 @@
                 if (msg != ''){
                     alert(msg);
                     return false
+                }
+                else{
+                    $('#modalCadastro').modal('hide')
                 }
                 return true
             }
