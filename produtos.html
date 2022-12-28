@@ -84,11 +84,11 @@
                     <form action="">
                         
                         <div class="form-group">
-                            <label for="desc-form">Descrição do produto</label>
+                            <label for="descricao">Descrição do produto</label>
                             <input type="tex" class="form-control modal-field" id="descricao" placeholder="Insira uma descrição sobre o produto">
                         </div>
                         <div class="form-group">
-                            <label for="categoria-form">Selecione uma categoria</label>
+                            <label for="categoria">Selecione uma categoria</label>
                             <select class="form-control" id="categoria">
                                 <option>Ingredientes</option>
                                 <option>Utensílios de Cozinha</option>
@@ -96,18 +96,18 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="estoque-form">Estoque</label>
+                            <label for="estoque">Estoque</label>
                             <input type="number" class="form-control modal-field" id="estoque" placeholder="Coloque a quantidade de estoque do produto">
                         </div>
                         <div class="form-group">
-                            <label for="valor-form">Valor</label>
+                            <label for="valor">Valor</label>
                             <input type="number" class="form-control modal-field" id="valor" placeholder="Insira o valor do produto">
                         </div>
                     </form>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="produto.cancelar()">Cancelar</button>
-                    <button type="button" class="btn btn-primary"  onclick="produto.salvar()">Salvar</button>
+                    <button type="button" class="btn btn-primary" id="btn1" onclick="produto.salvar()">Salvar</button>
                   </div>
                 </div>
             </div>
@@ -118,21 +118,27 @@
         class Produto{
             constructor(){
                 this.id = 1;
-                this.descProduto = '';
-                this.categoria = '';
-                this.estoque = 1;
-                this.valor = 1;
                 this.arrayProdutos = [];
+                this.editId =null;
             }
+
             salvar(){
                 let produto = this.lerDados();
 
-                if (this.validaCampos(produto));{
-                    this.adicionar(produto);
+                if (this.validaCampos(produto)){
+                    if(this.editId == null){
+                        this.adicionar(produto);
+                    }
+                else{
+                    this.atualizar(this.editId, produto);
+                    }
                 }
                 this.listaTabela();
+                this.buttonSalvar();
+
+                console.log(produto);
             }
-            
+                
             listaTabela(){
                 let tbody = document.getElementById('tbody');
                 tbody.innerText ='';
@@ -151,11 +157,11 @@
                     td_descricao.innerText = this.arrayProdutos[i].descricao;
                     td_categoria.innerText = this.arrayProdutos[i].categoria;
                     td_estoque.innerText = this.arrayProdutos[i].estoque;
-                    td_valor.innerText = this.arrayProdutos[i].valor;
-                    
+                    td_valor.innerText = this.arrayProdutos[i].valor;                    
 
                     let btnEdit = document.createElement("button");
                     btnEdit.innerHTML = 'Editar';
+                    btnEdit.setAttribute("onclick","produto.preparaEdicao("+ JSON.stringify(this.arrayProdutos[i]) +")");
 
                     let btnDel = document.createElement("button");
                     btnDel.innerHTML  = 'Deletar';
@@ -167,8 +173,31 @@
             }
 
             adicionar(produto){
+                produto.valor = parseFloat(produto.valor);
                 this.arrayProdutos.push(produto);
-                this.id++
+                this.id++;
+            }
+
+            atualizar(id, produto){
+                for(let i=0; i< this.arrayProdutos.length; i++){
+                   if(this.arrayProdutos[i].id == id){
+                        this.arrayProdutos[i].descricao = produto.descricao;
+                        this.arrayProdutos[i].categoria = produto.categoria;
+                        this.arrayProdutos[i].estoque = produto.estoque;
+                        this.arrayProdutos[i].valor = produto.valor;
+                   }   
+                }
+            }
+
+            preparaEdicao(dados){
+                 this.editId = dados.id;
+                
+                 document.getElementById('descricao').value = dados.descricao;
+                 document.getElementById('categoria').value = dados.categoria;
+                 document.getElementById('estoque').value = dados.estoque;
+                 document.getElementById('valor').value = dados.valor;
+
+                 document.getElementById('btn1').innerText="Atualizar";
             }
 
             lerDados(){
@@ -194,23 +223,33 @@
                 if(produto.valor == ""){
                     msg += 'Insira o valor do produto \n'
                 }
-
                 if (msg != ''){
                     alert(msg);
                     return false
                 }
+                return true
+            }
+            
+            buttonSalvar(){
+                document.getElementById('btn1').innerText = 'Salvar';
+                this.editId = null;
             }
 
-            deletar(){
-                alert('Estou deletandoooo!');
-                // document.getElementById('descricao');
-                // document.getElementById('categoria');
-                // document.getElementById('estoque');
-                // document.getElementById('valor');
+            deletar(id){
+                if(confirm('Deseja realmente deletar este produto?')){
+                    let tbody = document.getElementById('tbody');
+
+                    for(let i=0; i <this.arrayProdutos.length; i++){
+                        if(this.arrayProdutos[i].id == id){
+                            this.arrayProdutos.splice(i, 1);
+                            tbody.deleteRow(i);
+                        }
+                    }
+                }
             }
         }
+        var produto = new Produto();
 
-var produto = new Produto();
     </script>
 
     <script src="./js/produtos.js"></script>
